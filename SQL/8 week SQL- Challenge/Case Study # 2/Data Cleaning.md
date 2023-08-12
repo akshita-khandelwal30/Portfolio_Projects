@@ -1,0 +1,74 @@
+
+# Data Cleaning
+
+## customer_orders table
+- The exclusions and extras columns in customer_orders table will need to be cleaned up before using them in the queries  
+- In the exclusions and extras columns, there are blank spaces and null values.
+
+```sql
+SELECT
+  [order_id],   
+  [customer_id],   
+  [pizza_id],   
+  CASE
+    WHEN exclusions IS NULL OR
+      exclusions LIKE 'null' THEN ' '
+    ELSE exclusions
+  END AS exclusions,
+  CASE
+    WHEN extras IS NULL OR
+      extras LIKE 'null' THEN ' '
+    ELSE extras
+  END AS extras,
+  [order_time] INTO Updated_customer_orders
+FROM [pizza_runner].[customer_orders];
+
+select * from Updated_customer_orders;
+```
+#### Result set:
+![image](https://user-images.githubusercontent.com/120770473/236623265-7f5928df-4851-4d81-a2e6-0002a05c6e81.png)
+
+***
+
+## runner_orders table
+- The pickup_time, distance, duration and cancellation columns in runner_orders table will need to be cleaned up before using them in the queries  
+- In the pickup_time column, there are null values.
+- In the distance column, there are null values. It contains unit - km. The 'km' must also be stripped 
+- In the duration column, there are null values. The 'minutes', 'mins' 'minute' must be stripped
+- In the cancellation column, there are blank spaces and null values.
+
+```sql
+create table updated_runner_orders
+(
+[order_id] int,
+[runner_id] int,
+[pickup_time] datetime,
+[distance] float,
+[duration] int,
+[cancellation] varchar(23)
+);
+
+insert into updated_runner_orders 
+select 
+  order_id, 
+  runner_id, 
+  case when pickup_time LIKE 'null' then null else pickup_time end as pickup_time, 
+  case when distance LIKE 'null' then null else trim(
+    REPLACE(distance, 'km', '')
+  ) end as distance, 
+  case when duration LIKE 'null' then null else trim(
+    REPLACE(
+      duration, 
+      substring(duration, 3, 10), 
+      ''
+    )
+  ) end as duration, 
+  CASE WHEN cancellation IN ('null', 'NaN', '') THEN null ELSE cancellation END AS cancellation 
+from 
+  [pizza_runner].[runner_orders];
+```
+
+
+
+
+***
