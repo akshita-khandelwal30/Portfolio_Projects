@@ -13,4 +13,4 @@ Part 2 poses guided research questions that are then explored and answered throu
 
 The dataset provided is an abridged version of Yelp's review database, limited to a total of 10,000 distinct values in each primary key variable. 
 
-### ER Diagram
+
